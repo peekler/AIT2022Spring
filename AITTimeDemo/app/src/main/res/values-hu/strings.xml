@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">AITTimeDemo</string>
-    <string name="button_show">Show time and date</string>
+    <string name="button_show">Mutasd az aktuális időt</string>
 
-    <string name="text_time_result">The current time is: %1$s</string>
+    <string name="text_time_result">Aktuális idő: %1$s</string>
 
     <!-- %1: this is the first argument
          $s: this argument is a string $d: is a number - the type of the string parameter... -->
