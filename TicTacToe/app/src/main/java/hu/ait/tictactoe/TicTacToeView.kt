@@ -1,10 +1,7 @@
 package hu.ait.tictactoe
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PointF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -13,8 +10,13 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
 
     private lateinit var paintBackgorund: Paint
     private lateinit var paintLine: Paint
+    private lateinit var paintText: Paint
 
+    private var bitmapBg: Bitmap =
+        BitmapFactory.decodeResource(resources, R.drawable.grass)
 
+    private var bitmapFlag: Bitmap =
+        BitmapFactory.decodeResource(resources, R.drawable.flag)
 
     init {
         paintBackgorund = Paint()
@@ -25,6 +27,21 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
         paintLine.color = Color.WHITE
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 5f
+
+        paintText = Paint()
+        paintText.color = Color.GREEN
+        paintText.textSize = 70f
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        paintText.textSize = h/3f
+
+        bitmapBg = Bitmap.createScaledBitmap(bitmapBg,
+            width, height, false)
+
+        bitmapFlag = Bitmap.createScaledBitmap(bitmapFlag,
+            width/3, height/3, false)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -35,9 +52,17 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
             height.toFloat(), paintBackgorund
         )
 
+        //canvas?.drawBitmap(bitmapBg, 0f, 0f, null)
+
         drawGameArea(canvas!!)
 
         drawPlayers(canvas!!)
+
+        canvas?.drawText(
+            "5", 0f, height/3f, paintText
+        )
+
+        canvas?.drawBitmap(bitmapFlag, width/3f, height/3f, null)
     }
 
     private fun drawGameArea(canvas: Canvas) {
@@ -84,10 +109,31 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
             val tX = event.x.toInt() / (width / 3)
             val tY = event.y.toInt() / (height / 3)
 
+            if ((context as MainActivity).isFlagModeOn()) {
+
+            } else {
+
+            }
+
+
+
             if (tX < 3 && tY < 3 && TicTacToeModel.getFieldContent(tX, tY) ==
                 TicTacToeModel.EMPTY) {
                 TicTacToeModel.setFieldContent(tX, tY, TicTacToeModel.getNextPlayer())
                 TicTacToeModel.changeNextPlayer()
+
+                if (TicTacToeModel.getNextPlayer() == TicTacToeModel.CIRCLE){
+                    (context as MainActivity).showText("Next player is O")
+                } else  {
+                    (context as MainActivity).showText("Next player is X")
+                }
+
+
+                if (TicTacToeModel.getWinner() == TicTacToeModel.CIRCLE) {
+                    (context as MainActivity).showText("Winner is O")
+                    // (MainActivity)context
+                }
+
                 invalidate()
             }
 
@@ -97,8 +143,15 @@ class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, att
     }
 
     public fun resetGame() {
-
+        TicTacToeModel.resetModel()
         invalidate()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val w = View.MeasureSpec.getSize(widthMeasureSpec)
+        val h = View.MeasureSpec.getSize(heightMeasureSpec)
+        val d = if (w == 0) h else if (h == 0) w else if (w < h) w else h
+        setMeasuredDimension(d, d)
     }
 
 }

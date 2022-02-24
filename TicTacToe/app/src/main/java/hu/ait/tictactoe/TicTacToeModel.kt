@@ -6,6 +6,9 @@ object TicTacToeModel {
     public val CIRCLE: Short = 1
     public val CROSS: Short = 2
 
+    public val TIE: Short = 3
+    public val NOTOVER: Short = 4
+
     private val model = arrayOf(
         shortArrayOf(EMPTY, EMPTY, EMPTY),
         shortArrayOf(EMPTY, EMPTY, EMPTY),
@@ -33,4 +36,10 @@ object TicTacToeModel {
     fun changeNextPlayer() {
         nextPlayer = if (nextPlayer == CIRCLE) CROSS else CIRCLE
     }
+
+
+    public fun getWinner() : Short {
+        return NOTOVER
+    }
+
 }
