@@ -21,7 +21,7 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <hu.ait.tictactoe.TicTacToeView
+        <hu.ait.tictactoe.ui.TicTacToeView
             android:id="@+id/ticTacToeView"
             android:layout_width="500dp"
             android:layout_height="300dp" />

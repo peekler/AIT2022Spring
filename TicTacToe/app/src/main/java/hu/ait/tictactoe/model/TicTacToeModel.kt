@@ -1,4 +1,4 @@
-package hu.ait.tictactoe
+package hu.ait.tictactoe.model
 
 object TicTacToeModel {
 

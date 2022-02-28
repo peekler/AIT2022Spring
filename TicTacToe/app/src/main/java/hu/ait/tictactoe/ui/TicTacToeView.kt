@@ -1,10 +1,13 @@
-package hu.ait.tictactoe
+package hu.ait.tictactoe.ui
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import hu.ait.tictactoe.MainActivity
+import hu.ait.tictactoe.R
+import hu.ait.tictactoe.model.TicTacToeModel
 
 class TicTacToeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
