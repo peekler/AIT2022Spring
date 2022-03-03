@@ -1,5 +1,6 @@
 package hu.ait.highlowgame
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import hu.ait.highlowgame.databinding.ActivityGameBinding
@@ -27,7 +28,7 @@ class GameActivity : AppCompatActivity() {
 
         binding.btnGuess.setOnClickListener {
             try {
-                if (binding.etGuess.text.isNotEmpty()) {
+                if (binding.etGuess.text!!.isNotEmpty()) {
                     val myNumber = binding.etGuess.text.toString().toInt()
                     if (myNumber < generatedNum) {
                         binding.tvResult.text = "The number is higher"
@@ -35,6 +36,9 @@ class GameActivity : AppCompatActivity() {
                         binding.tvResult.text = "The number is lower"
                     } else if (myNumber == generatedNum) {
                         binding.tvResult.text = "CONGRATULATIONS!"
+                        startActivity(Intent(
+                            this, ResultActivity::class.java
+                        ))
                     }
                 } else {
                     binding.etGuess.error = "This field can not be empty"
