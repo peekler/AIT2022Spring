@@ -44,6 +44,9 @@ class MainActivity : AppCompatActivity() {
                 binding.etData.text.toString())
             DataManager.data.add("data3")
 
+            intentDetails.setAction("ACTION_JUHUUU")
+            sendBroadcast(intentDetails)
+
             //startActivity(intentDetails)
             startForResult.launch(intentDetails)
             //finish()

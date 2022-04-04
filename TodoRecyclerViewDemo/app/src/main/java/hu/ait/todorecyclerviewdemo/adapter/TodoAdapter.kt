@@ -10,8 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import hu.ait.todorecyclerviewdemo.R
 import hu.ait.todorecyclerviewdemo.data.Todo
 import hu.ait.todorecyclerviewdemo.databinding.TodoRowBinding
+import hu.ait.todorecyclerviewdemo.touch.TodoTouchHelperCallback
+import java.util.*
 
-class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>{
+class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>,
+    TodoTouchHelperCallback {
 
     var todoItems = mutableListOf<Todo>(
         Todo("2018. 09. 10", false, "Eat"),
@@ -35,6 +38,7 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>{
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val todo = todoItems[position]
         holder.bind(todo)
+
     }
 
     fun addTodo(newTodo: Todo) {
@@ -44,13 +48,36 @@ class TodoAdapter : RecyclerView.Adapter<TodoAdapter.ViewHolder>{
         //notifyDataSetChanged() - redraws the whole recyclerView
     }
 
+    fun deleteLastItem() {
+        todoItems.removeLast()
+        notifyItemRemoved(todoItems.lastIndex+1)
+    }
+
+    fun deleteItem(idx: Int) {
+        todoItems.removeAt(idx)
+        notifyItemRemoved(idx)
+    }
+
+    override fun onDismissed(position: Int) {
+        deleteItem(position)
+    }
+
+    override fun onItemMoved(fromPosition: Int, toPosition: Int) {
+        Collections.swap(todoItems, fromPosition, toPosition)
+        notifyItemMoved(fromPosition, toPosition)
+    }
 
     inner class ViewHolder(var binding: TodoRowBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(todo: Todo) {
             binding.tvDate.text = todo.createData
             binding.cbDone.text = todo.todoText
             binding.cbDone.isChecked = todo.isDone
+
+            binding.btnDelete.setOnClickListener {
+                deleteItem(this.adapterPosition)
+            }
         }
+
     }
 
 }
