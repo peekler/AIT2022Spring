@@ -64,6 +64,21 @@ class TodoAdapter(var context: Context)
             binding.btnDelete.setOnClickListener {
                 deleteItem(this.adapterPosition)
             }
+
+            binding.btnEdit.setOnClickListener {
+                (context as ScrollingActivity).showEditDialog(
+                    getItem(this.adapterPosition)
+                )
+            }
+
+            binding.cbDone.setOnClickListener {
+                val currentTodo = getItem(adapterPosition)
+                currentTodo.isDone = binding.cbDone.isChecked
+
+                thread {
+                    AppDatabase.getInstance(context).todoDao().updateTodo(currentTodo)
+                }
+            }
         }
 
     }

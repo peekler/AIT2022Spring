@@ -1,5 +1,6 @@
 package hu.ait.todorecyclerviewdemo
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -17,9 +18,17 @@ import hu.ait.todorecyclerviewdemo.data.Todo
 import hu.ait.todorecyclerviewdemo.databinding.ActivityScrollingBinding
 import hu.ait.todorecyclerviewdemo.dialog.TodoDialog
 import hu.ait.todorecyclerviewdemo.touch.TodoReyclerTouchCallback
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 import kotlin.concurrent.thread
 
 class ScrollingActivity : AppCompatActivity(), TodoDialog.TodoHandler {
+
+    companion object {
+        const val KEY_TODO_EDIT = "KEY_TODO_EDIT"
+        const val PREFNAME = "MYPREFERENCES"
+        const val KEY_WAS_STARTED = "KEY_WAS_STARTED"
+    }
+
 
     private lateinit var binding: ActivityScrollingBinding
     private lateinit var adapter: TodoAdapter
@@ -40,7 +49,32 @@ class ScrollingActivity : AppCompatActivity(), TodoDialog.TodoHandler {
         }
 
         initRecyclerView()
+
+        if (!wasStartedBefore()) {
+            MaterialTapTargetPrompt.Builder(this)
+                .setTarget(binding.fab)
+                .setPrimaryText("New Todo")
+                .setSecondaryText("Click here to add new items")
+                .show()
+
+            saveAppWasStarted()
+        }
     }
+
+    fun saveAppWasStarted() {
+        val sharedpref = getSharedPreferences(
+            PREFNAME,
+            MODE_PRIVATE)
+        val editor = sharedpref.edit()
+        editor.putBoolean(KEY_WAS_STARTED, true)
+        editor.apply()
+    }
+
+    fun wasStartedBefore() : Boolean {
+        val sharedPref = getSharedPreferences(PREFNAME, MODE_PRIVATE)
+        return sharedPref.getBoolean(KEY_WAS_STARTED, false)
+    }
+
 
     private fun initRecyclerView() {
         adapter = TodoAdapter(this)
@@ -56,6 +90,15 @@ class ScrollingActivity : AppCompatActivity(), TodoDialog.TodoHandler {
             })
     }
 
+    fun showEditDialog(todoToEdit: Todo) {
+        val dialog = TodoDialog()
+
+        val bundle = Bundle()
+        bundle.putSerializable(KEY_TODO_EDIT, todoToEdit)
+        dialog.arguments = bundle
+
+        dialog.show(supportFragmentManager, "TAG_ITEM_EDIT")
+    }
 
     override fun todoCreated(todo: Todo) {
         thread {
@@ -69,6 +112,12 @@ class ScrollingActivity : AppCompatActivity(), TodoDialog.TodoHandler {
                     }
                     .show()
             }
+        }
+    }
+
+    override fun todoUpdated(todo: Todo) {
+        thread {
+            AppDatabase.getInstance(this).todoDao().updateTodo(todo)
         }
     }
 

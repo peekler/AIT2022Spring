@@ -3,6 +3,7 @@ package hu.ait.todorecyclerviewdemo.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "todotable")
 data class Todo(
@@ -10,4 +11,4 @@ data class Todo(
     @ColumnInfo(name = "createDate") var createData: String,
     @ColumnInfo(name = "isDone") var isDone: Boolean,
     @ColumnInfo(name = "todoText") var todoText: String
-)
+) : Serializable

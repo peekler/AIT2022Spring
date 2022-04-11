@@ -7,6 +7,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import hu.ait.todorecyclerviewdemo.ScrollingActivity
 import hu.ait.todorecyclerviewdemo.data.Todo
 import hu.ait.todorecyclerviewdemo.databinding.TodoDialogBinding
 import java.util.*
@@ -15,6 +16,8 @@ class TodoDialog : DialogFragment() {
 
     interface TodoHandler {
         fun todoCreated(todo: Todo)
+
+        fun todoUpdated(todo: Todo)
     }
 
     lateinit var todoHandler: TodoHandler
@@ -32,22 +35,55 @@ class TodoDialog : DialogFragment() {
 
     lateinit var binding: TodoDialogBinding
 
+    private var isEditMode = false
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogBuilder = AlertDialog.Builder(requireContext())
-        dialogBuilder.setTitle("Todo dialog")
+
+        // Are we in edit mode? - Have we received a Todo object to edit?
+        if (arguments != null && requireArguments().containsKey(
+                ScrollingActivity.KEY_TODO_EDIT)) {
+            isEditMode = true
+            dialogBuilder.setTitle("Edit Todo")
+        } else {
+            isEditMode = false
+            dialogBuilder.setTitle("New Todo")
+        }
+
         binding = TodoDialogBinding.inflate(requireActivity().layoutInflater)
         dialogBuilder.setView(binding.root)
 
+        // pre-fill the dialog if we are in edit mode
+        if (isEditMode) {
+            val todoToEdit =
+                requireArguments().getSerializable(
+                    ScrollingActivity.KEY_TODO_EDIT) as Todo
+
+            binding.etTodoText.setText(todoToEdit.todoText)
+            binding.cbTodoDone.isChecked = todoToEdit.isDone
+        }
+
         dialogBuilder.setPositiveButton("Ok") {
                 dialog, which ->
+            if (isEditMode) {
+                val todoToEdit =
+                    (requireArguments().getSerializable(
+                        ScrollingActivity.KEY_TODO_EDIT) as Todo).copy(
+                        todoText = binding.etTodoText.text.toString(),
+                        isDone =  binding.cbTodoDone.isChecked
+                        )
 
-            todoHandler.todoCreated(
-                Todo(
-                    null,
-                    Date(System.currentTimeMillis()).toString(),
-                    binding.cbTodoDone.isChecked,
-                    binding.etTodoText.text.toString())
-            )
+                todoHandler.todoUpdated(todoToEdit)
+            } else {
+                todoHandler.todoCreated(
+                    Todo(
+                        null,
+                        Date(System.currentTimeMillis()).toString(),
+                        binding.cbTodoDone.isChecked,
+                        binding.etTodoText.text.toString()
+                    )
+                )
+            }
         }
         dialogBuilder.setNegativeButton("Cancel") {
                 dialog, which ->
