@@ -37,8 +37,7 @@ class TodoAdapter(var context: Context)
     }
 
     fun deleteLastItem() {
-        //todoItems.removeLast()
-        //notifyItemRemoved(todoItems.lastIndex+1)
+        deleteItem(itemCount-1)
     }
 
     fun deleteItem(idx: Int) {

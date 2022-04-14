@@ -65,30 +65,57 @@ class TodoDialog : DialogFragment() {
 
         dialogBuilder.setPositiveButton("Ok") {
                 dialog, which ->
-            if (isEditMode) {
-                val todoToEdit =
-                    (requireArguments().getSerializable(
-                        ScrollingActivity.KEY_TODO_EDIT) as Todo).copy(
-                        todoText = binding.etTodoText.text.toString(),
-                        isDone =  binding.cbTodoDone.isChecked
-                        )
-
-                todoHandler.todoUpdated(todoToEdit)
-            } else {
-                todoHandler.todoCreated(
-                    Todo(
-                        null,
-                        Date(System.currentTimeMillis()).toString(),
-                        binding.cbTodoDone.isChecked,
-                        binding.etTodoText.text.toString()
-                    )
-                )
-            }
+            //
         }
+
         dialogBuilder.setNegativeButton("Cancel") {
                 dialog, which ->
         }
         return dialogBuilder.create()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val dialog = dialog as AlertDialog
+        val positiveButton = dialog.getButton(Dialog.BUTTON_POSITIVE)
+
+        positiveButton.setOnClickListener {
+            if (binding.etTodoText.text.isEmpty()) {
+                binding.etTodoText.error = "This field can not be empty"
+            } else {
+                if (isEditMode) {
+                    handleEdit()
+                } else {
+                    handleCreate()
+                }
+
+                dialog.dismiss()
+            }
+        }
+    }
+
+    private fun handleCreate() {
+        todoHandler.todoCreated(
+            Todo(
+                null,
+                Date(System.currentTimeMillis()).toString(),
+                binding.cbTodoDone.isChecked,
+                binding.etTodoText.text.toString()
+            )
+        )
+    }
+
+    private fun handleEdit() {
+        val todoToEdit =
+            (requireArguments().getSerializable(
+                ScrollingActivity.KEY_TODO_EDIT
+            ) as Todo).copy(
+                todoText = binding.etTodoText.text.toString(),
+                isDone = binding.cbTodoDone.isChecked
+            )
+
+        todoHandler.todoUpdated(todoToEdit)
     }
 
 

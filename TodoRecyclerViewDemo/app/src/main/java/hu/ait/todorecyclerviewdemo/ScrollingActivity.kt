@@ -105,7 +105,6 @@ class ScrollingActivity : AppCompatActivity(), TodoDialog.TodoHandler {
             AppDatabase.getInstance(this).todoDao().insertTodo(todo)
 
             runOnUiThread {
-
                 Snackbar.make(binding.root, "Todo created", Snackbar.LENGTH_LONG)
                     .setAction("Undo") {
                         adapter.deleteLastItem()
