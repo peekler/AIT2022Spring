@@ -33,7 +33,6 @@ class TodoAdapter(var context: Context)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val todo = getItem(position)
         holder.bind(todo)
-
     }
 
     fun deleteLastItem() {
