@@ -10,6 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AITForum">
         <activity
+            android:name=".CreatePostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ForumActivity"
+            android:exported="false"
+            android:label="@string/title_activity_forum"
+            android:theme="@style/Theme.AITForum.NoActionBar" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
