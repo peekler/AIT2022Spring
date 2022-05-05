@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnGetRates.setOnClickListener {
             val call = moneyService.getMoneyRates("969c37b5a73f8cb2d12c081dcbdc35e6")
+
             call.enqueue(object : Callback<MoneyResult> {
                 override fun onResponse(call: Call<MoneyResult>, response: Response<MoneyResult>) {
                     binding.tvData.text = "EUR-HUF: ${response.body()!!.rates!!.HUF}\n" +
