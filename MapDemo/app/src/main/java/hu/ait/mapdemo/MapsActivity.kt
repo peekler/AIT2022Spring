@@ -2,6 +2,8 @@ package hu.ait.mapdemo
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -16,6 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import hu.ait.mapdemo.databinding.ActivityMapsBinding
 import java.util.*
+import kotlin.concurrent.thread
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
     MyLocationManager.OnNewLocationAvailable {
@@ -91,6 +94,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        binding.tvCoordinate.setOnClickListener {
+            if (lastLocation != null) {
+                geocodeLocation(LatLng(lastLocation!!.latitude,
+                    lastLocation!!.longitude))
+            }
+        }
+
+
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this,
             R.raw.mapstyle))
 
@@ -141,14 +152,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
         })
     }
 
+
+    var lastLocation: Location? = null
+
     override fun onNewLocation(location: Location) {
+
+        lastLocation = location
+
         mMap.addMarker(
             MarkerOptions()
                 .position(LatLng(location.latitude,location.longitude))
                 .title("Demo")
                 .snippet("Demo text")
         )
-
 
         binding.tvCoordinate.text =
             """
@@ -157,6 +173,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,
                 Accuracy: ${location.accuracy}
                 """
     }
+
+
+    private fun geocodeLocation(location: LatLng) {
+        thread {
+            try {
+                val gc = Geocoder(this, Locale.getDefault())
+                var addrs: List<Address> =
+                    gc.getFromLocation(location.latitude, location.longitude, 3)
+                val addr =
+                    "${addrs[0].getAddressLine(0)}, ${addrs[0].getAddressLine(1)}, ${addrs[0].getAddressLine(2)}"
+
+                runOnUiThread {
+                    Toast.makeText(this, addr, Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this@MapsActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
 
 
 }
